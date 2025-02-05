@@ -29,7 +29,7 @@ export default function App() {
     const [text, setText] = useState("");
     useEffect(() => {
         // Fetch names from the backend (your batchList.json or other source)
-        axios.get("http://localhost:5000/names")
+        axios.get("https://session-report.onrender.com/names")
             .then(response => setJsonNames(response.data))
             .catch(error => console.error("Error fetching names:", error));
 
@@ -105,7 +105,7 @@ export default function App() {
         }
 
         try {
-            const { data } = await axios.post("http://localhost:5000/update-attendance", {
+            const { data } = await axios.post("https://session-report.onrender.com/update-attendance", {
                 names: jsonNames, // Correctly use jsonNames here
                 attendedWithOtherBatches, // Names with extra text
                 attendanceInput: pastedNames // Admin-pasted attendance names
