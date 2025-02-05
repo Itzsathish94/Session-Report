@@ -30,6 +30,45 @@ app.get('/names', (req, res) => {
     }
 });
 
+// NEW: Endpoint to handle audio task submissions
+// Endpoint to handle audio task submissions
+app.post('/audio-task', (req, res) => {
+    console.log('Received Audio Task:', req.body);
+
+    const { audioTaskDate, taskDescription, notes, submittedNames } = req.body;
+
+    // Ensure submittedNames is an array
+    if (!submittedNames || !Array.isArray(submittedNames)) {
+        return res.status(400).json({ error: 'Submitted names must be an array' });
+    }
+
+    // Normalize names to match batch list for comparison
+    const normalizedSubmitted = submittedNames.map(name => name.trim().toLowerCase());
+    const normalizedBatchList = batchList.map(name => name.trim().toLowerCase());
+
+    // Find submitted and not submitted names
+    const submitted = batchList.filter(name => normalizedSubmitted.includes(name.trim().toLowerCase()));
+    const notSubmitted = batchList.filter(name => !normalizedSubmitted.includes(name.trim().toLowerCase()));
+
+    console.log({
+        audioTaskDate: audioTaskDate || "Not provided",
+        taskDescription: taskDescription || "Not provided",
+        notes: notes || "Not provided",
+        submitted,
+        notSubmitted
+    });
+
+    res.json({
+        message: 'Audio Task Submitted Successfully!',
+        submitted,
+        notSubmitted
+    });
+});
+
+
+
+
+
 app.post('/update-attendance', (req, res) => {
     console.log('Received request:', req.body);
 
