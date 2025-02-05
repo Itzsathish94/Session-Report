@@ -257,7 +257,7 @@ ${notes}
                                 onClick={handleInspireClick}
                                 className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-indigo-500"
                             >
-                                Pinne Potti!
+                                Polichuu!
                             </button>
                             <button
                                 type="button"
