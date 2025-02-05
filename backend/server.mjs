@@ -13,14 +13,9 @@ app.use(bodyParser.json());
 
 // Read batch list
 const batchData = JSON.parse(readFileSync(path.resolve('batchList.json'), 'utf-8'));
-const batchList = batchData.names; // Preserve original casing
+const batchList = batchData.names; 
 
-// Helper function to clean names (remove attended batch details)
-const normalizeName = (name) => {
-    return name.replace(/\(Attended with BCR \d+\)/i, '').trim();
-};
-
-// NEW: Endpoint to serve names
+// Endpoint to serve names
 app.get('/names', (req, res) => {
     try {
         res.json(batchList);
@@ -30,21 +25,19 @@ app.get('/names', (req, res) => {
     }
 });
 
-// NEW: Endpoint to handle audio task submissions
+
 // Endpoint to handle audio task submissions
 app.post('/audio-task', (req, res) => {
     console.log('Received Audio Task:', req.body);
 
     const { audioTaskDate, taskDescription, notes, submittedNames } = req.body;
 
-    // Ensure submittedNames is an array
     if (!submittedNames || !Array.isArray(submittedNames)) {
         return res.status(400).json({ error: 'Submitted names must be an array' });
     }
 
     // Normalize names to match batch list for comparison
     const normalizedSubmitted = submittedNames.map(name => name.trim().toLowerCase());
-    const normalizedBatchList = batchList.map(name => name.trim().toLowerCase());
 
     // Find submitted and not submitted names
     const submitted = batchList.filter(name => normalizedSubmitted.includes(name.trim().toLowerCase()));
@@ -67,7 +60,7 @@ app.post('/audio-task', (req, res) => {
 
 
 
-
+//Update attendace
 
 app.post('/update-attendance', (req, res) => {
     console.log('Received request:', req.body);
@@ -81,28 +74,28 @@ app.post('/update-attendance', (req, res) => {
     // Normalize name function to handle extra text
     const normalizeName = (name) => name.split(" (")[0].trim();
 
-    // 1. Remove selected names from names list and add them to attendance list
+    // Remove selected names from names list and add them to attendance list
     const updatedNamesList = names.filter(name => !attendanceInput.includes(normalizeName(name)));
 
-    // 2. Merge attended with extra text into the final attendance list
+    // Merge attended with extra text into the final attendance list
     const finalAttendees = [
         ...attendedWithOtherBatches.map(n => ({ name: normalizeName(n.name), extra: n.extra })),
         ...attendanceInput.map(name => ({ name: normalizeName(name), extra: '' }))
     ];
 
-    // 3. Remove any attendees or absentees with "AI NOTETAKER" or "Afzal" in their name
+    // Remove any attendees or absentees with "AI NOTETAKER" or "Afzal" in their name
     const filterExcludedNames = (name) => !name.toUpperCase().includes('AI NOTETAKER') && !name.toUpperCase().includes('AFZAL');
 
-    // 4. Ensure uniqueness by using a Set to remove duplicates and filter out names with "AI NOTETAKER" or "Afzal"
+    // Ensure uniqueness by using a Set to remove duplicates and filter out names with "AI NOTETAKER" or "Afzal"
     const uniqueAttendees = [
         ...new Set(finalAttendees.map(att => att.name))
     ].filter(filterExcludedNames);
 
-    // 5. Identify absentees (from the remaining names list that are not in finalAttendees)
+    // Identify absentees (from the remaining names list that are not in finalAttendees)
     const finalAttendeeNames = uniqueAttendees;
     const absentees = updatedNamesList.filter(name => !finalAttendeeNames.includes(normalizeName(name)) && filterExcludedNames(name));
 
-    // 6. Send back the final list of attendees with extra text, and absentees
+    // Send back the final list of attendees with extra text, and absentees
     const updatedAttendees = uniqueAttendees.map(name => {
         const extraText = attendedWithOtherBatches.find(
             batch => normalizeName(batch.name) === normalizeName(name)

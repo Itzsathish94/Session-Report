@@ -1,24 +1,19 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import bean from './assets/bean.png'; // Default image when not hovered
+import bean from './assets/bean.png';
 
 const Home = () => {
-  // State to track which button is hovered: "session-report" or "audio-task"
+
   const [hoveredButton, setHoveredButton] = useState('');
 
-  // Handle hover on "Session Report"
   const handleSessionReportHover = () => {
-    setHoveredButton('session-report'); // Set state to session-report
+    setHoveredButton('session-report');
   };
-
-  // Handle hover on "Audio Report"
   const handleAudioReportHover = () => {
-    setHoveredButton('audio-task'); // Set state to audio-task
+    setHoveredButton('audio-task');
   };
-
-  // Reset hover state when mouse leaves both buttons
   const handleHoverLeave = () => {
-    setHoveredButton(''); // Reset hover state
+    setHoveredButton('');
   };
 
   return (
