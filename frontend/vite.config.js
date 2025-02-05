@@ -1,8 +1,7 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/', // Add this line for correct asset path handling
-})
+  base: '/',
+  build: {
+    outDir: 'dist', // Ensure this matches your publish directory in Netlify
+  },
+});
