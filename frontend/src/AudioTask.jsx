@@ -109,7 +109,7 @@ ${notes}
                 width: 400,
                 padding: "1 em",
                 color: "#",
-                background: "#fff url(/public/cloud.jpg)",
+                background: "#fff url(/cloud.jpg)",
                 backdrop: `
                                   rgba(0,0,12,0.4)
                                   url("https://sweetalert2.github.io/images/nyan-cat.gif")

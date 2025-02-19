@@ -1,8 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { readFileSync } from 'fs';
+import { readFileSync, unlinkSync } from 'fs';
 import path from 'path';
+import multer from 'multer';
+import csv from 'csvtojson';
 
 const app = express();
 const PORT = 5000;
@@ -11,9 +13,12 @@ const PORT = 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
+// File upload setup
+const upload = multer({ dest: 'uploads/' });
+
 // Read batch list
 const batchData = JSON.parse(readFileSync(path.resolve('batchList.json'), 'utf-8'));
-const batchList = batchData.names; 
+const batchList = batchData.names;
 
 // Endpoint to serve names
 app.get('/names', (req, res) => {
@@ -24,7 +29,6 @@ app.get('/names', (req, res) => {
         res.status(500).json({ error: 'Failed to fetch names' });
     }
 });
-
 
 // Endpoint to handle audio task submissions
 app.post('/audio-task', (req, res) => {
@@ -58,10 +62,30 @@ app.post('/audio-task', (req, res) => {
     });
 });
 
+// **New Endpoint to Upload CSV and Extract Names for Attendance**
+app.post('/upload-attendance', upload.single('attendanceFile'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
 
+    try {
+        // Convert CSV to JSON
+        const jsonArray = await csv().fromFile(req.file.path);
 
-//Update attendace
+        // Extract names (Skipping first 3 rows which are metadata)
+        const extractedNames = jsonArray.slice(3).map(row => row['*     Meet']).filter(name => name);
 
+        // Remove uploaded file after processing
+        unlinkSync(req.file.path);
+
+        res.json({ attendanceInput: extractedNames });
+    } catch (error) {
+        console.error('Error processing file:', error);
+        res.status(500).json({ error: 'Failed to process file' });
+    }
+});
+
+// Update attendance
 app.post('/update-attendance', (req, res) => {
     console.log('Received request:', req.body);
 

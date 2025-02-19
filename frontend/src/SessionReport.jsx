@@ -3,6 +3,9 @@ import axios from "axios";
 import Swal from 'sweetalert2';
 import arrow from './assets/home2.png';
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 // Get the current date 
 const getCurrentDate = () => {
@@ -13,6 +16,9 @@ const getCurrentDate = () => {
 
 export default function App() {
     const [namesInput, setNamesInput] = useState("");
+    const [attendanceInput, setAttendanceInput] = useState([]);
+    const [file, setFile] = useState(null);
+
     const [attendedWithOtherBatches, setAttendedWithOtherBatches] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [suggestions, setSuggestions] = useState([]);
@@ -27,8 +33,44 @@ export default function App() {
     const [reportBy, setReportBy] = useState("");
     const [notes, setNotes] = useState("");
     const [text, setText] = useState("");
+
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    };
+
+    // Upload CSV & Fetch Extracted Names
+    const handleUpload = async () => {
+        if (!file) {
+            return alert("Please select a CSV file first!");
+        }
+
+        const formData = new FormData();
+        formData.append("attendanceFile", file);
+
+        try {
+            const { data } = await axios.post("http://localhost:5000/upload-attendance", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            setAttendanceInput(data.attendanceInput);  // Set extracted names
+            toast('✔️ File uploaded!',
+                {
+                  style: {
+                    borderRadius: '10px',
+                    background: '#333',
+                    color: '#fff',
+                  },
+                }
+              );
+            console.log("Extracted Names:", data.attendanceInput);
+        } catch (error) {
+            console.error("Error uploading CSV:", error.response || error.message);
+        }
+    };
+
+
     useEffect(() => {
-        axios.get("https://session-report.onrender.com/names")
+        axios.get("https://session-report.onrender.com/names")//"https://session-report.onrender.com/names","http://localhost:5000/names"
             .then(response => setJsonNames(response.data))
             .catch(error => console.error("Error fetching names:", error));
 
@@ -93,21 +135,17 @@ export default function App() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const pastedNames = namesInput
-            .split("\n")
-            .map(name => name.trim())
-            .filter(name => name !== "");
-
-        if (pastedNames.length === 0 && attendedWithOtherBatches.length === 0) {
-            return alert("Please enter valid names to compare!");
+        if (attendanceInput.length === 0 && attendedWithOtherBatches.length === 0) {
+            return alert("Please upload a CSV file with names to compare!");
         }
+
 
         try {
             const { data } = await axios.post("https://session-report.onrender.com/update-attendance", {
                 names: jsonNames,
                 attendedWithOtherBatches,
-                attendanceInput: pastedNames
-            });
+                attendanceInput
+            }); //"https://session-report.onrender.com/update-attendance","http://localhost:5000/update-attendance"
 
             console.log('Backend Response:', data); // Debugging log
 
@@ -124,7 +162,7 @@ export default function App() {
                     width: 400,
                     padding: "1 em",
                     color: "#",
-                    background: "#fff url(/public/cloud.jpg)",
+                    background: "#fff url(/cloud.jpg)",
                     backdrop: `
                       rgba(0,0,12,0.4)
                       url("https://sweetalert2.github.io/images/nyan-cat.gif")
@@ -289,7 +327,7 @@ TLDV Link: ${tldvLink}
                     )}
 
                     {/* Manual Input for Names */}
-                    <div>
+                    {/* <div>
                         <textarea
                             value={namesInput}
                             onChange={handleNamesInputChange}
@@ -297,7 +335,22 @@ TLDV Link: ${tldvLink}
                             rows="4"
                             className="block w-full border   border-gray-800  rounded-lg p-3 text-gray-300 bg-gray-900 shadow-sm focus:outline-none focus:ring-1 focus:ring-white"
                         />
+                    </div> */}
+                    <div className="relative w-full">
+                        <input
+                            type="file"
+                            accept=".csv"
+                            onChange={handleFileChange}
+                            className="w-full border border-gray-800 rounded-lg p-3 text-gray-300 bg-gray-900 shadow-sm focus:outline-none focus:ring-1 focus:ring-white pr-24"
+                        />
+                        <button
+                            onClick={handleUpload}
+                            className="absolute top-1/2 right-2 transform -translate-y-1/2 px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg text-sm hover:bg-indigo-700 transition-colors"
+                        >
+                            Upload
+                        </button>
                     </div>
+
 
                     {/* TLDV Link and Report By */}
 
