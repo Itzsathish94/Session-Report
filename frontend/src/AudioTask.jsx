@@ -26,7 +26,7 @@ export default function AudioTaskReport() {
     useEffect(() => {
         const fetchBatchList = async () => {
             try {
-                const response = await axios.get("https://session-report.onrender.com/names");
+                const response = await axios.get("https://session-report.onrender.com/names"); //"http://localhost:5000/names"","https://session-report.onrender.com/names"
                 setBatchList(response.data || []);
             } catch (error) {
                 console.error("Error fetching names:", error);
@@ -95,7 +95,7 @@ ${notes}
         `;
 
         try {
-            setLoading(true);
+            setLoading(true); //"http://localhost:5000/audio-task","https://session-report.onrender.com/audio-task"
             await axios.post("https://session-report.onrender.com/audio-task", {
                 audioTaskDate,
                 taskDescription,

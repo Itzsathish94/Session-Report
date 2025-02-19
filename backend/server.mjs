@@ -72,8 +72,11 @@ app.post('/upload-attendance', upload.single('attendanceFile'), async (req, res)
         // Convert CSV to JSON
         const jsonArray = await csv().fromFile(req.file.path);
 
+        // Get the first column name dynamically
+        const firstColumnName = Object.keys(jsonArray[0])[0];
+
         // Extract names (Skipping first 3 rows which are metadata)
-        const extractedNames = jsonArray.slice(3).map(row => row['*     Meet']).filter(name => name);
+        const extractedNames = jsonArray.slice(3).map(row => row[firstColumnName]).filter(name => name);
 
         // Remove uploaded file after processing
         unlinkSync(req.file.path);
@@ -84,6 +87,7 @@ app.post('/upload-attendance', upload.single('attendanceFile'), async (req, res)
         res.status(500).json({ error: 'Failed to process file' });
     }
 });
+
 
 // Update attendance
 app.post('/update-attendance', (req, res) => {

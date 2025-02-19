@@ -48,11 +48,12 @@ export default function App() {
         formData.append("attendanceFile", file);
 
         try {
-            const { data } = await axios.post("http://localhost:5000/upload-attendance", formData, {
+            const { data } = await axios.post("https://session-report.onrender.com/upload-attendance", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-
+            //"https://session-report.onrender.com/upload-attendance","http://localhost:5000/upload-attendance"
             setAttendanceInput(data.attendanceInput);  // Set extracted names
+            console.log("Updated attendanceInput:", data.attendanceInput);
             toast('✔️ File uploaded!',
                 {
                   style: {
@@ -132,23 +133,31 @@ export default function App() {
         navigate("/");
     };
 
+    useEffect(() => {
+        console.log("Updated Attendance Input:", attendanceInput);
+    }, [attendanceInput]); // ✅ This runs when attendanceInput changes
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
+        console.log("Submitting attendanceInput:", attendanceInput); // ✅ Debugging
+    
+        // Validate input - Ensures at least one source of attendance data exists.
         if (attendanceInput.length === 0 && attendedWithOtherBatches.length === 0) {
             return alert("Please upload a CSV file with names to compare!");
         }
-
-
+    
         try {
+            // Send data to backend //"https://session-report.onrender.com/update-attendance","http://localhost:5000/update-attendance"
             const { data } = await axios.post("https://session-report.onrender.com/update-attendance", {
                 names: jsonNames,
                 attendedWithOtherBatches,
                 attendanceInput
-            }); //"https://session-report.onrender.com/update-attendance","http://localhost:5000/update-attendance"
-
-            console.log('Backend Response:', data); // Debugging log
-
+            });
+    
+            console.log('Backend Response:', data); // ✅ Debugging log
+    
+            // Ensure response data has correct structure before updating state
             if (data && Array.isArray(data.attendees) && Array.isArray(data.absentees)) {
                 setAttendees(data.attendees.sort());
                 setAbsentees(data.absentees.sort());
@@ -156,12 +165,14 @@ export default function App() {
                     attendees: data.attendees,
                     absentees: data.absentees
                 });
+    
+                // ✅ SweetAlert2 success notification
                 Swal.fire({
-                    text: 'You are officially Lazy!',
                     title: `🎉🎉Congrats!🎉🎉`,
+                    text: 'You are officially Lazy!',
                     width: 400,
-                    padding: "1 em",
-                    color: "#",
+                    padding: "1em",
+                    color: "#000",
                     background: "#fff url(/cloud.jpg)",
                     backdrop: `
                       rgba(0,0,12,0.4)
@@ -177,7 +188,7 @@ export default function App() {
             console.error("Error in request:", error.response || error.message);
         }
     };
-
+    
     // Format the result for textarea
     const formatResultForTextarea = () => {
         const attendeesText = attendees.map(name => `${name}`).join("\n");
