@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -22,11 +22,14 @@ export default function AudioTaskReport() {
     const [selectedNames, setSelectedNames] = useState([]);
     const [report, setReport] = useState("");
     const navigate = useNavigate();
+    const reportRef = useRef(null);
+    const [fadeOut, setFadeOut] = useState(false);
+    const [copyMessage, setCopyMessage] = useState(null);
 
     useEffect(() => {
         const fetchBatchList = async () => {
             try {
-                const response = await axios.get("https://session-report.onrender.com/names"); //"http://localhost:5000/names"","https://session-report.onrender.com/names"
+                const response = await axios.get("https://session-report.onrender.com/api/user/names"); //"http://localhost:5000/api/user/names","https://session-report.onrender.com/api/user/names"
                 setBatchList(response.data || []);
             } catch (error) {
                 console.error("Error fetching names:", error);
@@ -95,8 +98,8 @@ ${notes}
         `;
 
         try {
-            setLoading(true); //"http://localhost:5000/audio-task","https://session-report.onrender.com/audio-task"
-            await axios.post("https://session-report.onrender.com/audio-task", {
+            setLoading(true); //"http://localhost:5000/api/user/audio-task","https://session-report.onrender.com/api/user/audio-task"
+            await axios.post("https://session-report.onrender.com/api/user/audio-task", {
                 audioTaskDate,
                 taskDescription,
                 notes,
@@ -123,6 +126,11 @@ ${notes}
             setSelectedNames([]);
             setReport(fullReport);
 
+            // Scroll to the generated report
+            setTimeout(() => {
+                reportRef.current?.scrollIntoView({ behavior: "smooth" });
+            }, 200);
+
         } catch (error) {
             console.error("Submission Error:", error.response?.data || error.message);
             Swal.fire({
@@ -139,7 +147,15 @@ ${notes}
     const copyToClipboard = () => {
         const resultText = report;
         navigator.clipboard.writeText(resultText)
-            .then(() => alert('Report copied to clipboard!'))
+        .then(() => {
+            // Show success message for 2 seconds
+            setCopyMessage("📒 Copied to clipboard!");
+            setFadeOut(false); // Reset the fadeOut state
+            setTimeout(() => {
+                setFadeOut(true); // Trigger fadeOut animation
+                setTimeout(() => setCopyMessage(null), 500); // Hide message after fade-out animation
+            }, 2000); // Message stays for 2 seconds
+        })
             .catch(err => console.error('Error copying text: ', err));
     };
 
@@ -255,35 +271,30 @@ ${notes}
                             <button
                                 type="button"
                                 onClick={handleInspireClick}
-                                className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-indigo-500"
+                                className="w-full px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-indigo-500"
                             >
-                                Polichuu!
+                                Polichu!
                             </button>
                             <button
                                 type="button"
                                 onClick={handleCautionClick}
-                                className="w-full px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-indigo-500"
+                                className="w-full px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-indigo-500"
                             >
                                 Ivde Noku!
                             </button>
                             <button
                                 type="submit"
-                                className={`px-6 py-3 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"}`}
+                                className={`w-full px-6 py-2 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"}`}
                                 disabled={loading}
                             >
                                 {loading ? "Submitting..." : "Generate"}
                             </button>
                         </div>
-
-                        {/* Submit Button */}
-                        <div className="text-center mt-4">
-
-                        </div>
                     </form>
 
                     {/* Display Generated Report */}
                     {report && (
-                        <div>
+                        <div ref={reportRef}>
                             <label className="block text-xl font-semibold text-white mb-2 text-center">Generated Report:</label>
                             <textarea
                                 value={report}
@@ -291,6 +302,12 @@ ${notes}
                                 rows="12"
                                 className="block  bg-gray-900 border border-gray-800  text-gray-300 w-full rounded-lg p-3 shadow-sm focus:ring-1 focus:ring-white scrollbar-hide"
                             />
+                            {/* Copy to clipboard success message */}
+                        {copyMessage && (
+                            <div className={`fixed top-0 left-1/2 transform -translate-x-1/2 w-72 sm:w-64 md:w-80 p-4 sm:p-3 bg-green-500 text-white rounded-lg shadow-xl text-center ${fadeOut ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
+                                <span className="font-semibold text-sm sm:text-base md:text-lg">{copyMessage}</span>
+                            </div>
+                        )}
                             <button
                                 onClick={copyToClipboard}
                                 className="w-full py-3 mt-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"

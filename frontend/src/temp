@@ -1,0 +1,31 @@
+useEffect(() => {
+    fetch("/batchList.json")
+      .then((res) => res.json())
+      .then((data) => setNames(data.names || []));
+    
+    fetch("/coordinatorList.json")
+      .then((res) => res.json())
+      .then((data) => setCoordinators(data.coordinators || ["", ""]));
+  }, []);
+
+  const updateCoordinators = () => {
+    if (selectedCoordinators[0] && selectedCoordinators[1]) {
+      fetch("/coordinatorList.json", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ coordinators: selectedCoordinators })
+      })
+        .then((res) => res.json())
+        .then(() => setCoordinators([...selectedCoordinators]));
+    }
+  };
+
+  const removeCoordinators = () => {
+    fetch("/coordinatorList.json", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ coordinators: ["", ""] })
+    })
+      .then((res) => res.json())
+      .then(() => setCoordinators(["", ""]));
+  };

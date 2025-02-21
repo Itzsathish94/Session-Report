@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Swal from 'sweetalert2';
 import arrow from './assets/home2.png';
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 
 
 // Get the current date 
@@ -18,7 +19,7 @@ export default function App() {
     const [namesInput, setNamesInput] = useState("");
     const [attendanceInput, setAttendanceInput] = useState([]);
     const [file, setFile] = useState(null);
-
+    const [successMessage, setSuccessMessage] = useState('');
     const [attendedWithOtherBatches, setAttendedWithOtherBatches] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [suggestions, setSuggestions] = useState([]);
@@ -33,13 +34,23 @@ export default function App() {
     const [reportBy, setReportBy] = useState("");
     const [notes, setNotes] = useState("");
     const [text, setText] = useState("");
+    const reportRef = useRef(null);
+    const [csvAlertMessage, setCsvAlertMessage] = useState(null);
+    const [fadeOut, setFadeOut] = useState(false);
+    const [copyMessage, setCopyMessage] = useState(null);
 
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            handleUpload(file);
+            setFile(file) // Automatically upload when a file is selected
+        }
     };
 
     // Upload CSV & Fetch Extracted Names
-    const handleUpload = async () => {
+    const handleUpload = async (file) => {
         if (!file) {
             return alert("Please select a CSV file first!");
         }
@@ -48,35 +59,36 @@ export default function App() {
         formData.append("attendanceFile", file);
 
         try {
-            const { data } = await axios.post("https://session-report.onrender.com/upload-attendance", formData, {
+            //"http://localhost:5000/api/user/upload-attendance","https://session-report.onrender.com/api/user/upload-attendance"
+            const { data } = await axios.post("https://session-report.onrender.com/api/user/upload-attendance", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-            //"https://session-report.onrender.com/upload-attendance","http://localhost:5000/upload-attendance"
-            setAttendanceInput(data.attendanceInput);  // Set extracted names
+
+            setAttendanceInput(data.attendanceInput); // Set extracted names
             console.log("Updated attendanceInput:", data.attendanceInput);
-            toast('✔️ File uploaded!',
-                {
-                  style: {
-                    borderRadius: '10px',
-                    background: '#333',
-                    color: '#fff',
-                  },
-                }
-              );
+
+            setSuccessMessage("✔️ File uploaded!");
+            setTimeout(() => {
+                setSuccessMessage("");  // Clear the success message
+            }, 2000);
+
             console.log("Extracted Names:", data.attendanceInput);
         } catch (error) {
             console.error("Error uploading CSV:", error.response || error.message);
         }
     };
 
-
     useEffect(() => {
-        axios.get("https://session-report.onrender.com/names")//"https://session-report.onrender.com/names","http://localhost:5000/names"
-            .then(response => setJsonNames(response.data))
+        axios.get("https://session-report.onrender.com/api/user/names") //"http://localhost:5000/api/user/names","https://session-report.onrender.com/api/user/names"
+            .then(response => {
+                console.log("Fetched names:", response.data);  // Log to check if you're getting updated names
+                setJsonNames(response.data);
+            })
             .catch(error => console.error("Error fetching names:", error));
 
         // Load previously selected names from localStorage
         const savedNames = JSON.parse(localStorage.getItem("attendedWithOtherBatches")) || [];
+        console.log("Saved names:", savedNames);  // Log saved names from localStorage
         setAttendedWithOtherBatches(savedNames);
     }, []);
 
@@ -139,36 +151,44 @@ export default function App() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
         console.log("Submitting attendanceInput:", attendanceInput); // ✅ Debugging
-    
-        // Validate input - Ensures at least one source of attendance data exists.
-        if (attendanceInput.length === 0 && attendedWithOtherBatches.length === 0) {
-            return alert("Please upload a CSV file with names to compare!");
+
+        // Validate input
+        if (!file || (attendanceInput.length === 0 && attendedWithOtherBatches.length === 0)) {
+            setCsvAlertMessage("Please upload a Meetlist CSV 🤷‍♂️!");
+            setFadeOut(false); // Reset the fadeOut state
+            setTimeout(() => {
+                setFadeOut(true); // Trigger fadeOut animation
+                setTimeout(() => setCsvAlertMessage(null), 1000); // Remove message after fadeOut animation completes
+            }, 2000); // Message stays for 2 seconds
+            return;
         }
-    
+
         try {
-            // Send data to backend //"https://session-report.onrender.com/update-attendance","http://localhost:5000/update-attendance"
-            const { data } = await axios.post("https://session-report.onrender.com/update-attendance", {
+            //"https://session-report.onrender.com/api/user/names","http://localhost:5000/api/user/update-attendance"
+            const { data } = await axios.post("https://session-report.onrender.com/api/user/update-attendance", {
                 names: jsonNames,
                 attendedWithOtherBatches,
                 attendanceInput
             });
-    
+
             console.log('Backend Response:', data); // ✅ Debugging log
-    
-            // Ensure response data has correct structure before updating state
+
             if (data && Array.isArray(data.attendees) && Array.isArray(data.absentees)) {
                 setAttendees(data.attendees.sort());
                 setAbsentees(data.absentees.sort());
-                setCombinedResult({
-                    attendees: data.attendees,
-                    absentees: data.absentees
-                });
-    
-                // ✅ SweetAlert2 success notification
+
+                // ✅ Ensuring state updates before scrolling
+                setCombinedResult({ attendees: data.attendees, absentees: data.absentees });
+
+                // ✅ Scroll to report after state updates
+                setTimeout(() => {
+                    reportRef.current?.scrollIntoView({ behavior: "smooth" });
+                }, 200); // Slight delay to ensure DOM updates
+
+                // ✅ SweetAlert2 notification
                 Swal.fire({
-                    title: `🎉🎉Congrats!🎉🎉`,
+                    title: `🎉🎉 Congrats! 🎉🎉`,
                     text: 'You are officially Lazy!',
                     width: 400,
                     padding: "1em",
@@ -188,7 +208,9 @@ export default function App() {
             console.error("Error in request:", error.response || error.message);
         }
     };
-    
+
+
+
     // Format the result for textarea
     const formatResultForTextarea = () => {
         const attendeesText = attendees.map(name => `${name}`).join("\n");
@@ -230,7 +252,15 @@ TLDV Link: ${tldvLink}
     const copyToClipboard = () => {
         const resultText = formatResultForTextarea();
         navigator.clipboard.writeText(resultText)
-            .then(() => alert('Report copied to clipboard!'))
+            .then(() => {
+                // Show success message for 2 seconds
+                setCopyMessage("📒 Copied to clipboard!");
+                setFadeOut(false); // Reset the fadeOut state
+                setTimeout(() => {
+                    setFadeOut(true); // Trigger fadeOut animation
+                    setTimeout(() => setCopyMessage(null), 500); // Hide message after fade-out animation
+                }, 2000); // Message stays for 2 seconds
+            })
             .catch(err => console.error('Error copying text: ', err));
     };
 
@@ -283,6 +313,8 @@ TLDV Link: ${tldvLink}
                             className="block  border-gray-800  w-full border rounded-lg p-3 text-gray-300 bg-gray-900 shadow-sm focus:outline-none focus:ring-1 focus:ring-white"
                         />
                     </div>
+
+
 
                     {/* Search & Select Names */}
                     <div>
@@ -337,6 +369,33 @@ TLDV Link: ${tldvLink}
                         </div>
                     )}
 
+                    <div className="flex flex-wrap items-center justify-center sm:justify-between w-full border border-gray-800 rounded-lg p-3 bg-gray-900 gap-2 sm:gap-4 text-center sm:text-left">
+                        <p className="text-gray-300 text-sm font-semibold">
+                            Attended session with <span className="text-indigo-400 font-bold">BCR 56/57</span>
+                        </p>
+                        <div className="w-full sm:w-auto flex justify-center">
+                            <label
+                                htmlFor="file-upload"
+                                className="cursor-pointer px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg shadow-md hover:bg-blue-700 transition-all"
+                            >
+                                Upload CSV
+                            </label>
+                        </div>
+                        <input
+                            id="file-upload"
+                            type="file"
+                            accept=".csv"
+                            onChange={handleFileChange}
+                            className="hidden"
+                        />
+                    </div>
+
+                    {successMessage && (
+                        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 w-72 sm:w-64 md:w-80 p-4 sm:p-3 bg-green-500 text-white rounded-lg shadow-xl text-center transition-opacity opacity-100 animate-fadeIn">
+                            <span className="font-semibold text-sm sm:text-base md:text-lg">{successMessage}</span>
+                        </div>
+                    )}
+
                     {/* Manual Input for Names */}
                     {/* <div>
                         <textarea
@@ -347,21 +406,15 @@ TLDV Link: ${tldvLink}
                             className="block w-full border   border-gray-800  rounded-lg p-3 text-gray-300 bg-gray-900 shadow-sm focus:outline-none focus:ring-1 focus:ring-white"
                         />
                     </div> */}
-                    <div className="relative w-full">
-                        <input
-                            type="file"
-                            accept=".csv"
-                            onChange={handleFileChange}
-                            className="w-full border border-gray-800 rounded-lg p-3 text-gray-300 bg-gray-900 shadow-sm focus:outline-none focus:ring-1 focus:ring-white pr-24"
-                        />
-                        <button
-                            onClick={handleUpload}
-                            className="absolute top-1/2 right-2 transform -translate-y-1/2 px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg text-sm hover:bg-indigo-700 transition-colors"
-                        >
-                            Upload
-                        </button>
-                    </div>
 
+
+
+                    {/* CSV upload alert message */}
+                    {csvAlertMessage && (
+                        <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-72 sm:w-64 md:w-80 p-4 sm:p-3 bg-red-500 text-white rounded-lg shadow-xl text-center opacity-100 transition-opacity animate-fadeIn">
+                            <span className="font-semibold text-sm sm:text-base md:text-lg">{csvAlertMessage}</span>
+                        </div>
+                    )}
 
                     {/* TLDV Link and Report By */}
 
@@ -397,7 +450,7 @@ TLDV Link: ${tldvLink}
 
                 {/* Display Report */}
                 {combinedResult.attendees && (
-                    <div className="w-full max-w-lg mt-8 bg-gray-900 shadow-lg rounded-lg p-6">
+                    <div ref={reportRef} className="w-full max-w-lg mt-8 bg-gray-900 shadow-lg rounded-lg p-6">
                         <h2 className="text-xl font-semibold text-center text-white mb-4">Generated Report</h2>
                         <textarea
                             value={text ? text : setText(formatResultForTextarea())}
@@ -405,6 +458,13 @@ TLDV Link: ${tldvLink}
                             rows="10"
                             className="w-full bg-gray-900 border border-gray-800 rounded-lg p-3 text-gray-300 scrollbar-hide"
                         />
+
+                        {/* Copy to clipboard success message */}
+                        {copyMessage && (
+                            <div className={`fixed top-0 left-1/2 transform -translate-x-1/2 w-72 sm:w-64 md:w-80 p-4 sm:p-3 bg-green-500 text-white rounded-lg shadow-xl text-center ${fadeOut ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
+                                <span className="font-semibold text-sm sm:text-base md:text-lg">{copyMessage}</span>
+                            </div>
+                        )}
                         <button
                             onClick={copyToClipboard}
                             className="w-full py-3 mt-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"

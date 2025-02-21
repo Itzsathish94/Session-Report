@@ -3,10 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Home';
 import SessionReport from './SessionReport';
 import AudioTask from './AudioTask';
+import AdminDashboard from './AdminDashboard';
 import { ToastContainer } from "react-toastify";
-
-
-
+import ProtectedRoute from './ProtectedRoute';
 
 const App = () => {
   return (
@@ -20,11 +19,16 @@ const App = () => {
         draggable
         theme="dark"
       />
-      <div className="min-h-screen flex flex-col items-center justify-center">
+      <div className="min-h-screen w-full flex flex-col items-center justify-center">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/session-report" element={<SessionReport />} />
           <Route path="/audio-task" element={<AudioTask />} />
+          {/* Protect the Admin Dashboard route */}
+          <Route 
+            path="/admin-dashboard" 
+            element={<ProtectedRoute element={<AdminDashboard />} />} 
+          />
         </Routes>
       </div>
     </Router>
