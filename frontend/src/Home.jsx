@@ -91,8 +91,8 @@ const Home = () => {
   return (
     <div className="min-h-screen w-full bg-gray-900 flex items-center justify-center">
       <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center text-center p-20 text-white">
-        <h1 className="mb-[60px] text-[35px] pl-7 font-bold text-gray-100">
-          Boomer <span className="text-xs text-gray-400 ml-1 opacity-70">v1.0.0</span>
+        <h1 className="mb-[60px] text-[35px] pl-1 font-bold text-gray-100">
+          Boomer <span className="text-xs text-gray-400 ml-1 opacity-70">v2.0.0</span>
         </h1>
 
         {/* Image with conditional class based on hover state */}
@@ -197,9 +197,9 @@ const Home = () => {
       
 
         {/* Footer Section */}
-        <footer className="absolute bottom-4 text-sm text-gray-400">
-          <p>&copy; 2025 BCR 56/57. All rights reserved.</p>
-        </footer>
+        <footer className="fixed bottom-0 w-full text-sm text-gray-400 text-center py-2 bg-gray-900">
+  <p>&copy; 2025 BCR 56/57. All rights reserved.</p>
+</footer>
       </div>
     </div>
   );
