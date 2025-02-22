@@ -11,8 +11,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-    origin: "https://boomerv1.netlify.app", // ✅ Replace with your frontend URL,'http://localhost:5173'
-    credentials: true // ✅ Allows cookies to be sent
+    origin: "https://boomerv1.netlify.app", // ✅ Your frontend URL
+    credentials: true, // ✅ Allows cookies to be sent
+    methods: ["GET", "POST", "PUT", "DELETE"], // ✅ Ensure all necessary methods are allowed
+    allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allow required headers
 }));
 
 // Middleware
@@ -20,13 +22,13 @@ app.use(express.json());
 
 // Session Middleware (supports login persistence)
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'defaultSecret', // Load from .env for security
+    secret: process.env.SESSION_SECRET || 'defaultSecret',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+        httpOnly: true, // Prevent client-side access
+        secure: true, // ✅ Must be `true` in production since Netlify & Render use HTTPS
+        sameSite: "None", // ✅ Required for cross-origin cookies
     }
 }));
 
