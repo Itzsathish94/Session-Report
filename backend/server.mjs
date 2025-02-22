@@ -10,12 +10,36 @@ import adminRoutes from './routes/adminRoutes.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({
-    origin: "https://boomerv1.netlify.app", // ✅ Your frontend URL
-    credentials: true, // ✅ Allows cookies to be sent
-    methods: ["GET", "POST", "PUT", "DELETE"], // ✅ Ensure all necessary methods are allowed
-    allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allow required headers
-}));
+app.use((req, res, next) => {
+    console.log("Incoming request from origin:", req.headers.origin);
+    next();
+});
+
+const allowedOrigins = [
+  "http://localhost:5173",  // ✅ Local development
+  "https://boomerv1.netlify.app"  // ✅ Deployed frontend
+];
+
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true); // Allow non-browser requests like Postman
+        if (allowedOrigins.includes(origin)) {
+          callback(null, origin); // Set origin dynamically
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+app.get("/", (req, res) => {
+    res.send("CORS is working!");
+  });
 
 // Middleware
 app.use(express.json());
