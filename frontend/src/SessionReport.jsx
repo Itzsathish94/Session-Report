@@ -3,7 +3,6 @@ import axios from "axios";
 import Swal from 'sweetalert2';
 import arrow from './assets/home2.png';
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 
@@ -39,10 +38,10 @@ export default function App() {
     const [fadeOut, setFadeOut] = useState(false);
     const [copyMessage, setCopyMessage] = useState(null);
 
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
-    (window.location.hostname === "localhost"
-      ? "http://localhost:5000"
-      : "https://session-report.onrender.com");
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ||
+        (window.location.hostname === "localhost"
+            ? "http://localhost:5000"
+            : "https://session-report.onrender.com");
 
 
 
@@ -63,7 +62,7 @@ export default function App() {
         const formData = new FormData();
         formData.append("attendanceFile", file);
 
-        try { 
+        try {
             //"http://localhost:5000/api/user/upload-attendance","https://session-report.onrender.com/api/user/upload-attendance"
             const { data } = await axios.post(`${API_BASE_URL}/api/user/upload-attendance`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
@@ -74,7 +73,7 @@ export default function App() {
 
             setSuccessMessage("✔️ File uploaded!");
             setTimeout(() => {
-                setSuccessMessage("");  // Clear the success message
+                setSuccessMessage("");
             }, 2000);
 
             console.log("Extracted Names:", data.attendanceInput);
@@ -84,16 +83,14 @@ export default function App() {
     };
 
     useEffect(() => {
-        axios.get( `${API_BASE_URL}/api/user/names`) //"http://localhost:5000/api/user/names","https://session-report.onrender.com/api/user/names"
+        axios.get(`${API_BASE_URL}/api/user/names`) //"http://localhost:5000/api/user/names","https://session-report.onrender.com/api/user/names"
             .then(response => {
-                console.log("Fetched names:", response.data);  // Log to check if you're getting updated names
                 setJsonNames(response.data);
             })
             .catch(error => console.error("Error fetching names:", error));
 
         // Load previously selected names from localStorage
         const savedNames = JSON.parse(localStorage.getItem("attendedWithOtherBatches")) || [];
-        console.log("Saved names:", savedNames);  // Log saved names from localStorage
         setAttendedWithOtherBatches(savedNames);
     }, []);
 
@@ -121,7 +118,6 @@ export default function App() {
         if (attendedWithOtherBatches.some(item => item.name === name)) return;
 
         setAttendedWithOtherBatches(prev => [...prev, { name, extra: "" }]);
-        // Remove selected name from jsonNames
         setJsonNames(prev => prev.filter(item => item !== name));
 
         setSearchQuery("");
@@ -139,8 +135,6 @@ export default function App() {
     const handleRemoveAttendee = (index) => {
         const removedName = attendedWithOtherBatches[index].name;
         setAttendedWithOtherBatches(prev => prev.filter((_, i) => i !== index));
-
-        // Restore removed name back to the jsonNames list
         setJsonNames(prev => [...prev, removedName]);
     };
 
@@ -152,46 +146,44 @@ export default function App() {
 
     useEffect(() => {
         console.log("Updated Attendance Input:", attendanceInput);
-    }, [attendanceInput]); // ✅ This runs when attendanceInput changes
+    }, [attendanceInput]); // This runs when attendanceInput changes
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Submitting attendanceInput:", attendanceInput); // ✅ Debugging
 
         // Validate input
         if (!file || (attendanceInput.length === 0 && attendedWithOtherBatches.length === 0)) {
             setCsvAlertMessage("Please upload a Meetlist CSV 🤷‍♂️!");
-            setFadeOut(false); // Reset the fadeOut state
+            setFadeOut(false);
             setTimeout(() => {
-                setFadeOut(true); // Trigger fadeOut animation
-                setTimeout(() => setCsvAlertMessage(null), 1000); // Remove message after fadeOut animation completes
-            }, 2000); // Message stays for 2 seconds
+                setFadeOut(true);
+                setTimeout(() => setCsvAlertMessage(null), 1000);
+            }, 2000);
             return;
         }
 
-        try { 
+        try {
             //"https://session-report.onrender.com/api/user/update-attendance","http://localhost:5000/api/user/update-attendance"
-            const { data } = await axios.post( `${API_BASE_URL}/api/user/update-attendance`, {
+            const { data } = await axios.post(`${API_BASE_URL}/api/user/update-attendance`, {
                 names: jsonNames,
                 attendedWithOtherBatches,
                 attendanceInput
             });
 
-            console.log('Backend Response:', data); // ✅ Debugging log
 
             if (data && Array.isArray(data.attendees) && Array.isArray(data.absentees)) {
                 setAttendees(data.attendees.sort());
                 setAbsentees(data.absentees.sort());
 
-                // ✅ Ensuring state updates before scrolling
+                // Ensuring state updates before scrolling
                 setCombinedResult({ attendees: data.attendees, absentees: data.absentees });
 
-                // ✅ Scroll to report after state updates
+                // Scroll to report after state updates
                 setTimeout(() => {
                     reportRef.current?.scrollIntoView({ behavior: "smooth" });
-                }, 200); // Slight delay to ensure DOM updates
+                }, 200);
 
-                // ✅ SweetAlert2 notification
+
                 Swal.fire({
                     title: `🎉🎉 Congrats! 🎉🎉`,
                     text: 'You are officially Lazy!',
@@ -258,13 +250,12 @@ TLDV Link: ${tldvLink}
         const resultText = formatResultForTextarea();
         navigator.clipboard.writeText(resultText)
             .then(() => {
-                // Show success message for 2 seconds
                 setCopyMessage("📒 Copied to clipboard!");
-                setFadeOut(false); // Reset the fadeOut state
+                setFadeOut(false);
                 setTimeout(() => {
-                    setFadeOut(true); // Trigger fadeOut animation
-                    setTimeout(() => setCopyMessage(null), 500); // Hide message after fade-out animation
-                }, 2000); // Message stays for 2 seconds
+                    setFadeOut(true);
+                    setTimeout(() => setCopyMessage(null), 500);
+                }, 2000);
             })
             .catch(err => console.error('Error copying text: ', err));
     };
@@ -411,8 +402,6 @@ TLDV Link: ${tldvLink}
                             className="block w-full border   border-gray-800  rounded-lg p-3 text-gray-300 bg-gray-900 shadow-sm focus:outline-none focus:ring-1 focus:ring-white"
                         />
                     </div> */}
-
-
 
                     {/* CSV upload alert message */}
                     {csvAlertMessage && (

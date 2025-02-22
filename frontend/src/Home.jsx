@@ -6,7 +6,7 @@ const Home = () => {
   const [hoveredButton, setHoveredButton] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [password, setPassword] = useState('');
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false); // State for checking admin login
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false); 
   const navigate = useNavigate();
  
 
@@ -25,7 +25,7 @@ const Home = () => {
   const handleLoginClick = () => setIsModalOpen(true);
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setPassword(''); // Clear password when closing
+    setPassword(''); 
   };
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
@@ -56,7 +56,6 @@ const Home = () => {
         // Store success message in localStorage
         localStorage.setItem('loginSuccessMessage', 'Logged in successfully! 💻');
 
-        // Navigate to admin dashboard
         navigate('/admin-dashboard');
       } else {
         alert(data.message || 'Login failed');
@@ -76,16 +75,16 @@ const Home = () => {
         method: 'POST',
         credentials: 'include'
       });
-      localStorage.removeItem('isAdminLoggedIn'); // Remove login status from localStorage
-      setIsAdminLoggedIn(false); // Update state to reflect the logout
-      navigate('/'); // Redirect back to home after logout
+      localStorage.removeItem('isAdminLoggedIn'); 
+      setIsAdminLoggedIn(false); 
+      navigate('/'); 
     } catch (error) {
       console.error('Logout error:', error);
     }
   };
 
   const handleDashboard = () => {
-    navigate('/admin-dashboard'); // Redirect to the admin dashboard if clicked
+    navigate('/admin-dashboard'); 
   };
 
   return (
@@ -170,7 +169,7 @@ const Home = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    handlePasswordSubmit(); // Trigger submit when Enter is pressed
+                    handlePasswordSubmit(); 
                   }
                 }}
               />

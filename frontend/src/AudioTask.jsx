@@ -153,13 +153,12 @@ ${notes}
         const resultText = report;
         navigator.clipboard.writeText(resultText)
         .then(() => {
-            // Show success message for 2 seconds
             setCopyMessage("📒 Copied to clipboard!");
-            setFadeOut(false); // Reset the fadeOut state
+            setFadeOut(false);
             setTimeout(() => {
-                setFadeOut(true); // Trigger fadeOut animation
-                setTimeout(() => setCopyMessage(null), 500); // Hide message after fade-out animation
-            }, 2000); // Message stays for 2 seconds
+                setFadeOut(true); 
+                setTimeout(() => setCopyMessage(null), 500); 
+            }, 2000);
         })
             .catch(err => console.error('Error copying text: ', err));
     };

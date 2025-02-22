@@ -31,7 +31,6 @@ const AdminDashboard = () => {
     const message = localStorage.getItem('loginSuccessMessage');
     if (message) {
       setSuccessMessage(message);
-      // Clear the message after displaying to avoid it appearing again if the user navigates back
       localStorage.removeItem('loginSuccessMessage');
       setTimeout(() => {
         setSuccessMessage('');
@@ -60,8 +59,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchNames();
-  }, []); // Empty dependency array ensures this runs only once
-
+  }, []); 
 
 
   const fetchNames = async () => {
@@ -78,8 +76,7 @@ const AdminDashboard = () => {
         console.error("Invalid API response format: Expected an array.", data);
         return;
       }
-
-      setNames([...namesList]); // Spread operator forces a re-render
+      setNames([...namesList]); 
     } catch (error) {
       console.error("Error fetching names:", error);
     }
@@ -100,12 +97,12 @@ const AdminDashboard = () => {
 
       // Ensure response contains updated names list, otherwise manually fetch
       if (response.data.names) {
-        setNames(response.data.names); // Directly update state with new list
+        setNames(response.data.names); 
       } else {
-        await fetchNames(); // Fetch updated names from the backend
+        await fetchNames(); 
       }
 
-      setNewName(''); // Clear the input field
+      setNewName(''); 
       setSuccessMessage('✔️ Name added!');
       setTimeout(() => {
         setSuccessMessage('');
@@ -118,14 +115,13 @@ const AdminDashboard = () => {
   };
 
   const deleteName = (index) => {
-    // Store the name to delete and open the confirmation modal
     const name = names[index];
     setNameToDelete(name);
     setIsConfirmModalOpen(true);
   };
 
   const handleConfirmDelete = () => {
-    const index = names.indexOf(nameToDelete); // Find the index based on the name
+    const index = names.indexOf(nameToDelete);
 
     if (index === -1) {
       console.error("Name not found");
@@ -141,7 +137,7 @@ const AdminDashboard = () => {
       .delete(`${API_BASE_URL}/api/admin/names/${index}`, { withCredentials: true })
       .then(() => {
         console.log('Name deleted successfully');
-        fetchNames(); // Re-fetch names after deletion
+        fetchNames(); 
         setSuccessMessage('Name deleted!🗑️');
         setTimeout(() => {
           setSuccessMessage('');
@@ -151,13 +147,11 @@ const AdminDashboard = () => {
         console.error('Error deleting name:', error);
       });
 
-    // Close the confirmation modal after deletion
     setIsConfirmModalOpen(false);
     setNameToDelete(null);
   };
 
   const handleCancelDelete = () => {
-    // Close the confirmation modal without deleting
     setIsConfirmModalOpen(false);
     setNameToDelete(null);
   };
@@ -175,7 +169,6 @@ const AdminDashboard = () => {
         return prev;
       });
 
-      // After the state update, call fetchNames to reload the coordinators list from the backend
       await fetchNames();
     } catch (error) {
       console.error("Error toggling coordinator:", error);
@@ -189,7 +182,6 @@ const AdminDashboard = () => {
      
       //`https://session-report.onrender.com/api/admin/toggle-coordinator`,"http://localhost:5000/api/admin/toggle-coordinator"
       await axios.post( `${API_BASE_URL}/api/admin/toggle-coordinator`, { name }, { withCredentials: true });
-      // After adding, refresh the names list
       fetchNames();
     } catch (error) {
       console.error("Error adding coordinator:", error);
@@ -209,10 +201,9 @@ const AdminDashboard = () => {
   };
 
   const toggleBw = (index) => {
-    // Toggle the current status of the 'bwStatus' for the given index
+
     const updatedBwStatus = !bwStatus[index];
 
-    // Update the local state with the new bwStatus
     setBwStatus((prevStatus) => ({ ...prevStatus, [index]: updatedBwStatus }));
 
     // Get the current name for that index
@@ -222,11 +213,11 @@ const AdminDashboard = () => {
     axios  
       .put(`${API_BASE_URL}/api/admin/names/${index}`, {
         name: nameToUpdate,
-        bwStatus: updatedBwStatus, // Pass the bwStatus to the backend
+        bwStatus: updatedBwStatus, 
       }, { withCredentials: true })
       .then((response) => {
         console.log('Name updated successfully', response.data);
-        fetchNames(); // Re-fetch the names to update the list
+        fetchNames();
       })
       .catch((error) => {
         console.error('Error updating name:', error);
@@ -236,8 +227,8 @@ const AdminDashboard = () => {
 
   const startEditing = (index) => {
     console.log("Editing index:", index);
-    setEditingIndex(index); // Set the index to start editing
-    setEditName(names[index]); // Pre-fill with the existing name
+    setEditingIndex(index); 
+    setEditName(names[index]); 
   };
 
   const saveEdit = () => {
@@ -249,11 +240,10 @@ const AdminDashboard = () => {
     }
 
     if (editingIndex !== null) {
-      // Make sure to update both `names` and `currentNames`
       const updatedNames = [...names];
       updatedNames[editingIndex] = editName;
       setNames(updatedNames);
-      setCurrentNames(updatedNames);  // Update currentNames to reflect changes immediately
+      setCurrentNames(updatedNames); 
 
       console.log("Updated names array:", updatedNames);
 
@@ -280,7 +270,6 @@ const AdminDashboard = () => {
         setTimeout(() => {
           setSuccessMessage('');
         }, 3000);
-          // Re-fetch updated names
           fetchNames();
         })
         .catch((error) => {
@@ -293,18 +282,18 @@ const AdminDashboard = () => {
 // Open the logout confirmation modal
 const openLogoutConfirmModal = () => {
   console.log("Opening logout confirmation modal...");
-  setIsLogoutModalOpen(true); // Set the modal open state to true
+  setIsLogoutModalOpen(true);
 };
 
 // Close the logout confirmation modal
 const closeLogoutConfirmModal = () => {
   console.log("Closing logout confirmation modal...");
-  setIsLogoutModalOpen(false); // Set the modal open state to false
+  setIsLogoutModalOpen(false);
 };
 
 // Handle the logout process after confirmation
 const handleLogout = async () => {
-  setLoading(true); // Set loading to true when the process begins
+  setLoading(true);
   try {
     console.log("Sending logout request to server...");
    
@@ -320,28 +309,26 @@ const handleLogout = async () => {
     }
 
     console.log("Logout successful");
-
-    // Clear local storage and redirect user
     localStorage.removeItem('isAdminLoggedIn');
-    navigate('/'); // Redirect back to home page after logout
+    navigate('/'); 
   } catch (error) {
-    console.error('Logout error:', error); // Log error if any
+    console.error('Logout error:', error); 
   } finally {
-    setLoading(false); // Stop loading when the process is done
+    setLoading(false); 
   }
 };
 
 // Handle when the user confirms the logout action
 const handleConfirmLogout = () => {
   console.log("User confirmed logout");
-  handleLogout(); // Proceed to the logout process
-  closeLogoutConfirmModal(); // Close the modal after confirming the logout
+  handleLogout();
+  closeLogoutConfirmModal();
 };
 
 // Handle when the user cancels the logout action
 const handleCancelLogout = () => {
   console.log("User canceled logout");
-  closeLogoutConfirmModal(); // Just close the modal without logging out
+  closeLogoutConfirmModal(); 
 };
 
   return (
@@ -353,9 +340,9 @@ const handleCancelLogout = () => {
         <div
           style={{
             backgroundImage: `url(${mrbean})`,
-            backgroundSize: "cover",  // Prevents cropping
+            backgroundSize: "cover",  
             backgroundRepeat: "no-repeat",
-            backgroundPosition: "top" // Keeps Mr. Bean’s face centered
+            backgroundPosition: "top" 
           }}
           className="relative w-full min-h-[170px] sm:min-h-[250px] md:min-h-[190px] mb-1"
         >
@@ -370,7 +357,7 @@ const handleCancelLogout = () => {
             {/* Responsive Logout Button */}
             <button
               className="bg-red-500 hover:bg-red-700 text-white px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 rounded"
-              onClick={openLogoutConfirmModal} // Open the confirmation modal
+              onClick={openLogoutConfirmModal}
             >
               Logout
             </button>
@@ -387,15 +374,15 @@ const handleCancelLogout = () => {
               </h2>
               <div className="mt-4 flex justify-between">
                 <button
-                  onClick={handleCancelLogout} // Cancel and close modal
+                  onClick={handleCancelLogout} 
                   className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded"
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={handleConfirmLogout} // Confirm and log out
+                  onClick={handleConfirmLogout} 
                   className="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded"
-                  disabled={loading} // Disable button while logout is in progress
+                  disabled={loading} 
                 >
                   {loading ? 'Logging out...' : 'Confirm'}
                 </button>
@@ -452,7 +439,7 @@ const handleCancelLogout = () => {
                       <td className="border border-gray-700 p-2">{actualIndex + 1}</td>
                       <td className="border border-gray-700 p-2 cursor-pointer"
                         onClick={(e) => {
-                          if (editingIndex === actualIndex) return; // Prevent toggle when editing
+                          if (editingIndex === actualIndex) return;
                           toggleCoordinator(name);
                         }}>
                         {editingIndex === actualIndex ? (
@@ -485,7 +472,7 @@ const handleCancelLogout = () => {
                         )}
                         <button
                           className="bg-red-500 bg-opacity-10 hover:bg-red-700 text-white px-2 py-1 rounded"
-                          onClick={() => deleteName(actualIndex)} // This will trigger the confirmation before deletion
+                          onClick={() => deleteName(actualIndex)}
                         >
                           ❌
                         </button>

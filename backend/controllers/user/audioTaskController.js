@@ -2,19 +2,14 @@ import { readFileSync } from 'fs';
 import path from 'path';
 
 
-
-
 // Fetch batch names
 export const getBatchNames = (req, res) => {
     try {
         // Read the file on each request to get the latest data
         const batchData = JSON.parse(readFileSync(path.resolve('batchList.json'), 'utf-8'));
         const batchList = batchData.names.filter(name => name !== 'Arun Thomas BCR64');
-
         // Set cache control header to disable caching
         res.setHeader('Cache-Control', 'no-store');
-        
-        // Send the updated batch list
         res.json(batchList);
     } catch (error) {
         console.error('Error fetching names:', error);
@@ -33,8 +28,7 @@ export const submitAudioTask = (req, res) => {
         if (!submittedNames || !Array.isArray(submittedNames)) {
             return res.status(400).json({ error: 'Submitted names must be an array' });
         }
-
-        // Read the batch list dynamically for every request
+        // Read the file on each request to get the latest data
         const batchData = JSON.parse(readFileSync(path.resolve('batchList.json'), 'utf-8'));
         const batchList = batchData.names.filter(name => name !== 'Arun Thomas BCR64');
 
@@ -44,14 +38,6 @@ export const submitAudioTask = (req, res) => {
         // Find submitted and not submitted names
         const submitted = batchList.filter(name => normalizedSubmitted.includes(name.trim().toLowerCase()));
         const notSubmitted = batchList.filter(name => !normalizedSubmitted.includes(name.trim().toLowerCase()));
-
-        console.log({
-            audioTaskDate: audioTaskDate || "Not provided",
-            taskDescription: taskDescription || "Not provided",
-            notes: notes || "Not provided",
-            submitted,
-            notSubmitted
-        });
 
         res.json({
             message: 'Audio Task Submitted Successfully!',

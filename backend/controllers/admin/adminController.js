@@ -13,12 +13,9 @@ const coordinatorListPath = path.join(__dirname, '../../coordinatorList.json');
 
 export const getBatchNames = async (req, res) => {
     try {
-        // Read and parse the file asynchronously
         const batchListPath = path.join(__dirname, '../../batchList.json');
         const data = await fs.promises.readFile(batchListPath, 'utf-8');
         const batchList = JSON.parse(data);
-
-        // Send the names array as a response
         res.status(200).json(batchList.names);
     } catch (err) {
         console.error('Error fetching batch names:', err);
@@ -35,15 +32,15 @@ export const adminLogin = (req, res) => {
     };
 
     if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-        req.session.admin = { username }; // ✅ Store session data
+        req.session.admin = { username }; 
 
-        req.session.save(err => {  // ✅ Ensure session is saved
+        req.session.save(err => {  
             if (err) {
                 console.error("Session save error:", err);
                 return res.status(500).json({ message: 'Session save error' });
             }
 
-            console.log('✅ Session Stored:', req.session); // Debugging
+            console.log('✅ Session Stored:', req.session);
             res.status(200).json({ message: 'Login successful', admin: req.session.admin });
         });
 
@@ -54,7 +51,6 @@ export const adminLogin = (req, res) => {
 
 
 export const adminLogout = (req, res) => {
-    // console.log('Logging out:', req.session);  // Log session data before destroying
     req.session.destroy((err) => {
         if (err) {
             console.error('Logout failed:', err);
@@ -85,14 +81,11 @@ export const addName = async (req, res) => {
     }
 
     try {
-        // Read and parse the file asynchronously
         const data = await fs.promises.readFile(batchListPath, 'utf-8');
         let batchList = JSON.parse(data);
 
         // Add the new name to the batch list
         batchList.names.unshift(name);
-
-        console.log('After adding name:', JSON.stringify(batchList, null, 2)); 
 
         // Write the updated data back to the file
         await fs.promises.writeFile(batchListPath, JSON.stringify(batchList, null, 2));
@@ -100,7 +93,6 @@ export const addName = async (req, res) => {
         console.log('Name added successfully');
         return res.status(200).json({ message: 'Name added successfully', name });
     } catch (err) {
-        // Handle file system or JSON parsing errors
         console.error('Error processing batchList.json:', err);
         return res.status(500).json({ message: 'Error processing batchList.json' });
     }
@@ -115,6 +107,8 @@ export const updateName = (req, res) => {
     if (!name) {
         return res.status(400).json({ message: 'Name is required' });
     }
+
+    const batchListPath = path.join(__dirname, '../../batchList.json');
 
     // Read the batch list from the file
     fs.readFile(batchListPath, 'utf-8', (err, data) => {
@@ -134,7 +128,7 @@ export const updateName = (req, res) => {
         // Update the name at the specified index
         let updatedName = name;
 
-        // If bwStatus is provided, modify the name accordingly
+        // If bwStatus is provided, modify the name 
         if (bwStatus !== undefined) {
             if (bwStatus) {
                 updatedName = `${updatedName} (BW)`; // Append (BW) if checked
@@ -160,6 +154,8 @@ export const updateName = (req, res) => {
 export const deleteName = (req, res) => {
     const { index } = req.params;
 
+    const batchListPath = path.join(__dirname, '../../batchList.json');
+
     fs.readFile(batchListPath, 'utf-8', (err, data) => {
         if (err) return res.status(500).json({ message: 'Error reading batchList.json' });
 
@@ -184,13 +180,11 @@ export const deleteName = (req, res) => {
 export const toggleCoordinatorName = (req, res) => {
     const { name } = req.body;
 
-    // Check for the name
     if (!name) {
         return res.status(400).json({ message: 'Name is required' });
     }
 
     try {
-        // Read the coordinator list
         fs.readFile(coordinatorListPath, 'utf-8', (err, data) => {
             if (err) return res.status(500).json({ message: 'Error reading coordinators.json' });
 
