@@ -9,7 +9,8 @@ const ProtectedRoute = ({ element }) => {
     const checkAuth = async () => {
       try {
         console.log('Checking authentication...');
-        const response = await fetch('http://localhost:5000/api/admin/check-auth', {
+        //"https://session-report.onrender.com/api/user/names",'http://localhost:5000/api/admin/check-auth'
+        const response = await fetch('https://session-report.onrender.com/api/admin/check-auth', {
           method: 'GET',
           credentials: 'include', // Include cookies for authentication
         });
