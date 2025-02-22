@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fix scrolling issues */
+html, body {
+  @apply w-full h-full overflow-x-hidden;
+}
+#root {
+  @apply min-h-screen w-full overflow-hidden;
+}
+
 /* Hide scrollbar for Chrome, Safari, and Edge */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
@@ -11,3 +19,4 @@
 .scrollbar-hide {
   scrollbar-width: none;
 }
+

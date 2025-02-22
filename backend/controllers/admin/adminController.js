@@ -3,16 +3,18 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
+
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const batchListPath = path.join(__dirname, '../../batchList.json');
+
 const coordinatorListPath = path.join(__dirname, '../../coordinatorList.json');
 
 export const getBatchNames = async (req, res) => {
     try {
         // Read and parse the file asynchronously
+        const batchListPath = path.join(__dirname, '../../batchList.json');
         const data = await fs.promises.readFile(batchListPath, 'utf-8');
         const batchList = JSON.parse(data);
 
@@ -74,6 +76,8 @@ export const checkAdminAuth = (req, res) => {
 
 export const addName = async (req, res) => {
     const { name } = req.body;
+
+    const batchListPath = path.join(__dirname, '../../batchList.json');
     
     // Input validation
     if (!name || typeof name !== 'string') {
