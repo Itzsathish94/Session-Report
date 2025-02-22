@@ -39,6 +39,11 @@ export default function App() {
     const [fadeOut, setFadeOut] = useState(false);
     const [copyMessage, setCopyMessage] = useState(null);
 
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+    (window.location.hostname === "localhost"
+      ? "http://localhost:5000"
+      : "https://session-report.onrender.com");
+
 
 
     const handleFileChange = (event) => {
@@ -58,9 +63,9 @@ export default function App() {
         const formData = new FormData();
         formData.append("attendanceFile", file);
 
-        try {
+        try { 
             //"http://localhost:5000/api/user/upload-attendance","https://session-report.onrender.com/api/user/upload-attendance"
-            const { data } = await axios.post("https://session-report.onrender.com/api/user/upload-attendance", formData, {
+            const { data } = await axios.post(`${API_BASE_URL}/api/user/upload-attendance`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
@@ -79,7 +84,7 @@ export default function App() {
     };
 
     useEffect(() => {
-        axios.get("https://session-report.onrender.com/api/user/names") //"http://localhost:5000/api/user/names","https://session-report.onrender.com/api/user/names"
+        axios.get( `${API_BASE_URL}/api/user/names`) //"http://localhost:5000/api/user/names","https://session-report.onrender.com/api/user/names"
             .then(response => {
                 console.log("Fetched names:", response.data);  // Log to check if you're getting updated names
                 setJsonNames(response.data);
@@ -164,9 +169,9 @@ export default function App() {
             return;
         }
 
-        try {
-            //"https://session-report.onrender.com/api/user/names","http://localhost:5000/api/user/update-attendance"
-            const { data } = await axios.post("https://session-report.onrender.com/api/user/update-attendance", {
+        try { 
+            //"https://session-report.onrender.com/api/user/update-attendance","http://localhost:5000/api/user/update-attendance"
+            const { data } = await axios.post( `${API_BASE_URL}/api/user/update-attendance`, {
                 names: jsonNames,
                 attendedWithOtherBatches,
                 attendanceInput

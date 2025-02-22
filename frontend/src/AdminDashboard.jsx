@@ -22,6 +22,11 @@ const AdminDashboard = () => {
   const [nameToDelete, setNameToDelete] = useState(null);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+  (window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://session-report.onrender.com");
+
   useEffect(() => {
     const message = localStorage.getItem('loginSuccessMessage');
     if (message) {
@@ -61,8 +66,9 @@ const AdminDashboard = () => {
 
   const fetchNames = async () => {
     try {
+    
       //"https://session-report.onrender.com/api/admin/names","http://localhost:5000/api/admin/names"
-      const response = await axios.get("https://session-report.onrender.com/api/admin/names", { withCredentials: true });
+      const response = await axios.get(`${API_BASE_URL}/api/admin/names`, { withCredentials: true });
       const data = response.data;
 
       console.log("Raw API Response:", data);
@@ -86,8 +92,9 @@ const AdminDashboard = () => {
     setLoading(true);
 
     try {
+      
       // Make API call to save the name //"https://session-report.onrender.com/api/admin/names","http://localhost:5000/api/admin/names"
-      const response = await axios.post("https://session-report.onrender.com/api/admin/names", { name: newName }, { withCredentials: true });
+      const response = await axios.post(`${API_BASE_URL}/api/admin/names`, { name: newName }, { withCredentials: true });
 
       console.log('Successfully added name:', response.data);
 
@@ -131,7 +138,7 @@ const AdminDashboard = () => {
 
     // Call backend to delete the name using Axios //`https://session-report.onrender.com/api/admin/names/${index}`,`http://localhost:5000/api/admin/names/${index}`
     axios
-      .delete(`https://session-report.onrender.com/api/admin/names/${index}`, { withCredentials: true })
+      .delete(`${API_BASE_URL}/api/admin/names/${index}`, { withCredentials: true })
       .then(() => {
         console.log('Name deleted successfully');
         fetchNames(); // Re-fetch names after deletion
@@ -179,8 +186,9 @@ const AdminDashboard = () => {
   // Add coordinator to backend
   const addCoordinator = async (name) => {
     try {
+     
       //`https://session-report.onrender.com/api/admin/toggle-coordinator`,"http://localhost:5000/api/admin/toggle-coordinator"
-      await axios.post("https://session-report.onrender.com/api/admin/toggle-coordinator", { name }, { withCredentials: true });
+      await axios.post( `${API_BASE_URL}/api/admin/toggle-coordinator`, { name }, { withCredentials: true });
       // After adding, refresh the names list
       fetchNames();
     } catch (error) {
@@ -192,7 +200,7 @@ const AdminDashboard = () => {
   const removeCoordinator = async (name) => {
     try {
       //'https://session-report.onrender.com/api/admin/toggle-coordinator',"http://localhost:5000/api/admin/toggle-coordinator"
-      await axios.post('https://session-report.onrender.com/api/admin/toggle-coordinator', { name }, { withCredentials: true });
+      await axios.post( `${API_BASE_URL}/api/admin/toggle-coordinator`, { name }, { withCredentials: true });
       // After removing, refresh the names list
       fetchNames();
     } catch (error) {
@@ -211,8 +219,8 @@ const AdminDashboard = () => {
     const nameToUpdate = names[index];
 
     // Update the backend with the new bwStatus and updated name //`https://session-report.onrender.com/api/admin/names/${index}`,`http://localhost:5000/api/admin/names/${index}`
-    axios
-      .put(`https://session-report.onrender.com/api/admin/names/${index}`, {
+    axios  
+      .put(`${API_BASE_URL}/api/admin/names/${index}`, {
         name: nameToUpdate,
         bwStatus: updatedBwStatus, // Pass the bwStatus to the backend
       }, { withCredentials: true })
@@ -261,9 +269,11 @@ const AdminDashboard = () => {
       setEditingIndex(null);
       setEditName('');
 
+      
+
       // Update the backend with the new name //`https://session-report.onrender.com/api/admin/names/${editingIndex}`,`http://localhost:5000/api/admin/names/${editingIndex}`
       axios
-        .put(`https://session-report.onrender.com/api/admin/names/${editingIndex}`, { name: editName }, { withCredentials: true })
+        .put(`${API_BASE_URL}/api/admin/names/${editingIndex}`, { name: editName }, { withCredentials: true })
         .then(() => {
           console.log('Name updated successfully');
           setSuccessMessage('Name updated!📝');
@@ -297,9 +307,9 @@ const handleLogout = async () => {
   setLoading(true); // Set loading to true when the process begins
   try {
     console.log("Sending logout request to server...");
-    
+   
     // API call to log out //`https://session-report.onrender.com/api/admin/logout`,'http://localhost:5000/api/admin/logout'
-    const response = await fetch(`https://session-report.onrender.com/api/admin/logout`, {
+    const response = await fetch( `${API_BASE_URL}/api/admin/logout`, {
       method: 'POST',
       credentials: 'include',
     });

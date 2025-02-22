@@ -28,10 +28,15 @@ const Home = () => {
     setPassword(''); // Clear password when closing
   };
 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+  (window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://session-report.onrender.com");
+
   const handlePasswordSubmit = async () => {
-    try {
+    try { 
       //"https://session-report.onrender.com/api/admin/login",'http://localhost:5000/api/admin/login'
-      const response = await fetch("https://session-report.onrender.com/api/admin/login", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -65,9 +70,9 @@ const Home = () => {
 
   const handleLogout = async () => {
 
-    try {
+    try { 
       //"https://session-report.onrender.com/api/admin/logout",'http://localhost:5000/api/admin/logout'
-      await fetch("https://session-report.onrender.com/api/admin/logout", {
+      await fetch(`${API_BASE_URL}/api/admin/logout`, {
         method: 'POST',
         credentials: 'include'
       });

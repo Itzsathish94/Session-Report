@@ -26,10 +26,15 @@ export default function AudioTaskReport() {
     const [fadeOut, setFadeOut] = useState(false);
     const [copyMessage, setCopyMessage] = useState(null);
 
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+    (window.location.hostname === "localhost"
+      ? "http://localhost:5000"
+      : "https://session-report.onrender.com");
+
     useEffect(() => {
         const fetchBatchList = async () => {
-            try {
-                const response = await axios.get("https://session-report.onrender.com/api/user/names"); //"http://localhost:5000/api/user/names","https://session-report.onrender.com/api/user/names"
+            try { 
+                const response = await axios.get(`${API_BASE_URL}/api/user/names`); //"http://localhost:5000/api/user/names","https://session-report.onrender.com/api/user/names"
                 setBatchList(response.data || []);
             } catch (error) {
                 console.error("Error fetching names:", error);
@@ -99,7 +104,7 @@ ${notes}
 
         try {
             setLoading(true); //"http://localhost:5000/api/user/audio-task","https://session-report.onrender.com/api/user/audio-task"
-            await axios.post("https://session-report.onrender.com/api/user/audio-task", {
+            await axios.post(`${API_BASE_URL}/api/user/audio-task`, { 
                 audioTaskDate,
                 taskDescription,
                 notes,

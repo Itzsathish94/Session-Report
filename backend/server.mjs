@@ -44,17 +44,19 @@ app.get("/", (req, res) => {
 // Middleware
 app.use(express.json());
 
-// Session Middleware (supports login persistence)
+app.set("trust proxy", 1); // ✅ Required for cookies to work behind a proxy
+
 app.use(session({
     secret: process.env.SESSION_SECRET || 'defaultSecret',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        httpOnly: true, // Prevent client-side access
-        secure: true, // ✅ Must be `true` in production since Netlify & Render use HTTPS
-        sameSite: "None", // ✅ Required for cross-origin cookies
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // ✅ `true` only in production
+        sameSite: "None",
     }
 }));
+
 
 // User Routes
 app.use('/api/user', userRoutes);
