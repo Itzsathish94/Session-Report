@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+  (window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://session-report.onrender.com");
+
+
 const ProtectedRoute = ({ element }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null); // Loading state for session check
   const navigate = useNavigate();
@@ -10,7 +16,7 @@ const ProtectedRoute = ({ element }) => {
       try {
         console.log('Checking authentication...');
         //"https://session-report.onrender.com/api/user/names",'http://localhost:5000/api/admin/check-auth'
-        const response = await fetch("https://session-report.onrender.com/api/admin/check-auth", {
+        const response = await fetch(`${API_BASE_URL}/api/admin/check-auth`, {
           method: "GET",
           credentials: "include", // ✅ Ensures cookies are sent
           headers: {
