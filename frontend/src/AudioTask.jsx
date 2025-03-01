@@ -81,7 +81,7 @@ Batch: BCR 56/57
 🗓 Date: ${audioTaskDate}
     
 🧑🏻‍🏫 Trainer: Afzal Nazar
-🧑🏻‍💻🧑🏻‍💻 Coordinators: Karthikeyan k & Nazil zaman kp
+🧑🏻‍💻🧑🏻‍💻 Coordinators: Abinraj & Ashish
     
 🎤 Task: ${taskDescription} 
     

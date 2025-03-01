@@ -223,7 +223,7 @@ Communication Trainer:
 🧑🏻‍🏫 Afzal Nazar
 
 Coordinators:
-🧑🏻‍💻 🧑🏻‍💻 Nazil and Karthikeyan K
+🧑🏻‍💻 🧑🏻‍💻 Ashish and Abinraj
 
 🏳 Topic: ${topic}
 
