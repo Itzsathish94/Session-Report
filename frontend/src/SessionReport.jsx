@@ -336,38 +336,38 @@ TLDV Link: ${tldvLink}
                         )}
                     </div>
 
-                    {/* Display Selected Names */}
-                    {attendedWithOtherBatches.length > 0 && (
-                        <div>
-                            <h4 className="font-semibold text-gray-300 pb-2 pl-1">Selected Names:</h4>
-                            <ul className=" bg-gray-900 border border-gray-800  text-gray-300 rounded-lg p-3 shadow-sm space-y-2 ">
-                                {attendedWithOtherBatches.map((entry, i) => (
-                                    <li key={i} className="flex justify-between items-center gap-4">
-                                        <span className="text-white">{entry.name}</span>
-                                        <div className="flex items-center gap-4">
-                                            <input
-                                                type="text"
-                                                placeholder="Which Session?"
-                                                value={entry.extra.replace(/^Attended with /, '')}
-                                                onChange={(e) => handleExtraTextChange(i, e.target.value)}
-                                                className="border  border-gray-800  rounded-lg p-2 text-sm text-gray-300 bg-gray-900"
-                                            />
-                                            <button
-                                                onClick={() => handleRemoveAttendee(i)}
-                                                className="text-red-600 text-xs font-semibold"
-                                            >
-                                                ❌
-                                            </button>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
+                   {/* Display Selected Names */}
+{attendedWithOtherBatches.length > 0 && (
+    <div>
+        <h4 className="font-semibold text-gray-300 pb-2 pl-1">Selected Names:</h4>
+        <ul className="bg-gray-900 border border-gray-800 text-gray-300 rounded-lg p-3 shadow-sm space-y-1 sm:space-y-2">
+            {attendedWithOtherBatches.map((entry, i) => (
+                <li key={i} className="flex justify-between items-center gap-2 sm:gap-4">
+                    <span className="text-white truncate">{entry.name}</span>
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        <input
+                            type="text"
+                            placeholder="Session?"
+                            value={entry.extra.replace(/^Attended with /, '')}
+                            onChange={(e) => handleExtraTextChange(i, e.target.value)}
+                            className="border border-gray-800 rounded-lg p-1 text-sm text-gray-300 bg-gray-900 w-16 sm:w-auto text-center"
+                        />
+                        <button
+                            onClick={() => handleRemoveAttendee(i)}
+                            className="text-red-600 text-xs font-semibold"
+                        >
+                            ❌
+                        </button>
+                    </div>
+                </li>
+            ))}
+        </ul>
+    </div>
+)}
+    
 
                     <div className="flex flex-wrap items-center justify-center sm:justify-between w-full border border-gray-800 rounded-lg p-3 bg-gray-900 gap-2 sm:gap-4 text-center sm:text-left">
 
-                        {/* Show "Attended session with BCR 56/57" initially, then replace with uploaded file name */}
                         {/* Show "Attended session with BCR 56/57" initially, then replace with uploaded file name */}
                         <p className="text-gray-300 text-sm font-semibold">
                             {file ? (
