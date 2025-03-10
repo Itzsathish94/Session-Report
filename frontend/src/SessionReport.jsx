@@ -127,7 +127,7 @@ export default function App() {
     const handleExtraTextChange = (index, value) => {
         setAttendedWithOtherBatches(prev => {
             const updated = [...prev];
-            updated[index].extra = value;
+            updated[index].extra = value ? `Attended with ${value}` : '';;
             return updated;
         });
     };
@@ -348,7 +348,7 @@ TLDV Link: ${tldvLink}
                                             <input
                                                 type="text"
                                                 placeholder="Which Session?"
-                                                value={entry.extra}
+                                                value={entry.extra.replace(/^Attended with /, '')}
                                                 onChange={(e) => handleExtraTextChange(i, e.target.value)}
                                                 className="border  border-gray-800  rounded-lg p-2 text-sm text-gray-300 bg-gray-900"
                                             />
@@ -366,25 +366,42 @@ TLDV Link: ${tldvLink}
                     )}
 
                     <div className="flex flex-wrap items-center justify-center sm:justify-between w-full border border-gray-800 rounded-lg p-3 bg-gray-900 gap-2 sm:gap-4 text-center sm:text-left">
+
+                        {/* Show "Attended session with BCR 56/57" initially, then replace with uploaded file name */}
+                        {/* Show "Attended session with BCR 56/57" initially, then replace with uploaded file name */}
                         <p className="text-gray-300 text-sm font-semibold">
-                            Attended session with <span className="text-indigo-400 font-bold">BCR 56/57</span>
+                            {file ? (
+                                <>
+                                    Uploaded: <span className="text-indigo-400 font-bold">{file.name.slice(0, 16)}</span>
+                                </>
+                            ) : (
+                                <>
+                                    Attended session with <span className="text-indigo-400 font-bold">BCR 56/57</span>
+                                </>
+                            )}
                         </p>
+
+
+                        {/* Upload button remains in the same position */}
                         <div className="w-full sm:w-auto flex justify-center">
                             <label
                                 htmlFor="file-upload"
-                                className="cursor-pointer px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg shadow-md hover:bg-blue-700 transition-all"
+                                className={`cursor-pointer px-4 py-2 text-white text-sm font-medium rounded-lg shadow-md transition-all 
+                ${file ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
                             >
-                                Upload CSV
+                                {file ? "✔️ File Uploaded" : "Upload CSV"}
                             </label>
+                            <input
+                                id="file-upload"
+                                type="file"
+                                accept=".csv"
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
                         </div>
-                        <input
-                            id="file-upload"
-                            type="file"
-                            accept=".csv"
-                            onChange={handleFileChange}
-                            className="hidden"
-                        />
+
                     </div>
+
 
                     {successMessage && (
                         <div className="fixed top-6 left-1/2 transform -translate-x-1/2 w-72 sm:w-64 md:w-80 p-4 sm:p-3 bg-green-500 text-white rounded-lg shadow-xl text-center transition-opacity opacity-100 animate-fadeIn">
