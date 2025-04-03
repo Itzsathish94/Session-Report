@@ -81,7 +81,7 @@ Batch: BCR 56/57
 🗓 Date: ${audioTaskDate}
     
 🧑🏻‍🏫 Trainer: Afzal Nazar
-🧑🏻‍💻🧑🏻‍💻 Coordinators: Frangly and Salih
+🧑🏻‍💻🧑🏻‍💻 Coordinators: Salih and Frangly
     
 🎤 Task: ${taskDescription} 
     

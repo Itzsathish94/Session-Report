@@ -223,7 +223,7 @@ Communication Trainer:
 🧑🏻‍🏫 Afzal Nazar
 
 Coordinators:
-🧑🏻‍💻 🧑🏻‍💻 Salih and Frangly 
+🧑🏻‍💻 🧑🏻‍💻 Frangly Francis and Salih V
 
 🏳 Topic: ${topic}
 
