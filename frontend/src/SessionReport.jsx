@@ -220,10 +220,10 @@ export default function App() {
 🕒 ${selectedTime}
 
 Communication Trainer:
-🧑🏻‍🏫 Afzal Nazar
+🧑🏻‍🏫 Rohaan N Devasia
 
 Coordinators:
-🧑🏻‍💻 🧑🏻‍💻 Meghanathan P H and Akash Joshy 
+🧑🏻‍💻 🧑🏻‍💻 Ajmal CA and Rashid 
 
 🏳 Topic: ${topic}
 

@@ -80,8 +80,8 @@ export default function AudioTaskReport() {
 Batch: BCR 56/57
 🗓 Date: ${audioTaskDate}
     
-🧑🏻‍🏫 Trainer: Afzal Nazar
-🧑🏻‍💻🧑🏻‍💻 Coordinators: Akash Joshy and Meghanathan P H 
+🧑🏻‍🏫 Trainer: Rohaan N Devasia
+🧑🏻‍💻🧑🏻‍💻 Coordinators: Ajmal CA and Rashid
     
 🎤 Task: ${taskDescription} 
     
