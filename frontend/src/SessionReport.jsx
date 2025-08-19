@@ -220,7 +220,7 @@ export default function App() {
 🕒 ${selectedTime}
 
 Communication Trainer:
-🧑🏻‍🏫 Rohaan N Devasia
+🧑🏻‍🏫 Rohan N Devasia
 
 Coordinators:
 🧑🏻‍💻 🧑🏻‍💻 Sathish Kumar

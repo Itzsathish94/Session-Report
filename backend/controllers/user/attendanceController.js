@@ -39,7 +39,7 @@ export const updateAttendance = (req, res) => {
     ];
 
 
-    const filterExcludedNames = (name) => !name.toUpperCase().includes('AI NOTETAKER') && !name.toUpperCase().includes('AFZAL') && !name.includes('Full Name');
+    const filterExcludedNames = (name) => !name.toUpperCase().includes('AI NOTETAKER') && !name.toUpperCase().includes('AFZAL') && !name.toUpperCase().includes('ROHAN N DEVASIA') && !name.includes('Full Name');
 
     const uniqueAttendees = [...new Set(finalAttendees.map(att => att.name))].filter(filterExcludedNames);
     const finalAttendeeNames = uniqueAttendees;
