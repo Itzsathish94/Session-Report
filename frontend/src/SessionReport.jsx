@@ -27,7 +27,7 @@ export default function App() {
     const [absentees, setAbsentees] = useState([]);
     const [combinedResult, setCombinedResult] = useState("");  // Combined result
     const [selectedDate, setSelectedDate] = useState(getCurrentDate());
-    const [selectedTime, setSelectedTime] = useState("04:30 PM - 05:30 PM");
+    const [selectedTime, setSelectedTime] = useState("03:30 PM - 04:30 PM");
     const [topic, setTopic] = useState("");
     const [tldvLink, setTldvLink] = useState("");
     const [reportBy, setReportBy] = useState("");
