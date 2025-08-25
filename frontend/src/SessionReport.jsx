@@ -318,7 +318,7 @@ TLDV Link: ${tldvLink}
                             type="text"
                             value={searchQuery}
                             onChange={handleSearchQueryChange}
-                            placeholder="Attended With Other Session"
+                            placeholder="Attended Other Session"
                             className="block w-full border  border-gray-800  rounded-lg p-3 text-gray-300 bg-gray-900 shadow-sm focus:outline-none focus:ring-1 focus:ring-white"
                         />
                         {suggestions.length > 0 && (
@@ -347,7 +347,7 @@ TLDV Link: ${tldvLink}
                     <div className="flex items-center gap-2 sm:gap-4">
                         <input
                             type="text"
-                            placeholder="Session?"
+                            placeholder="Batch and Time?"
                             value={entry.extra.replace(/^Attended with /, '')}
                             onChange={(e) => handleExtraTextChange(i, e.target.value)}
                             className="border border-gray-800 rounded-lg p-1 text-sm text-gray-300 bg-gray-900 w-16 sm:w-auto text-center"
