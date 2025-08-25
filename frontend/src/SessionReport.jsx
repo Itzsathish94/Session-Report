@@ -223,7 +223,7 @@ Communication Trainer:
 🧑🏻‍🏫 Rohan N Devasia
 
 Coordinators:
-🧑🏻‍💻 🧑🏻‍💻 Sathish Kumar
+🧑🏻‍💻 🧑🏻‍💻 Aswin T BCR37
 
 🏳 Topic: ${topic}
 
