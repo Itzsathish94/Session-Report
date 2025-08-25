@@ -376,7 +376,7 @@ TLDV Link: ${tldvLink}
                                 </>
                             ) : (
                                 <>
-                                    Attended session with <span className="text-indigo-400 font-bold">BCR 56/57</span>
+                                    Attended <span className="text-indigo-400 font-bold">regular</span> session
                                 </>
                             )}
                         </p>
