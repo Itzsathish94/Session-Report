@@ -215,7 +215,7 @@ export default function App() {
 
         return `Session Report
 ➖➖➖➖➖➖➖➖
-👥 BCR56/57
+👥 BCR 16, 30, 37, 38, 49, 50, 56 & 57
 📆 ${selectedDate}
 🕒 ${selectedTime}
 
